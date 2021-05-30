@@ -56,5 +56,10 @@ class SqueezeNetModel(object):
                 'expand3x3')
             return tf.concat([expand1x1, expand3x3], axis=-1)
             
-
+    # Stacking fire modules
+    def multi_fire_module(self, layer, param_list):
+        for params in param_list:
+            layer = self.fire_module(layer, params[0], params[1], params[2])
+        return layer
+    
         
