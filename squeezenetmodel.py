@@ -75,9 +75,29 @@ class SqueezeNetModel(object):
     # Model layers
     # inputs: [batch_size, resize_dim, resize_dim, 3]
     def model_layers(self, inputs, is_training):
-        conv1 = self.custom_conv2d(inputs, filters=64, kernel_size=[3, 3], name='conv1')
-        pool1 = self.castom_max_pooling2d(conv1, name='pool1')
-        fire_params1 = [(32, 64, 'fire1'), (32, 64, 'fire2')]
-        multi_fire1 = self.multi_fire_module(pool1, fire_params1)
-        pool2 = self.castom_max_pooling2d(multi_fire1, name='pool2')
-        
+        conv1 = self.custom_conv2d(
+            inputs, 
+            filters=64, 
+            kernel_size=[3, 3], 
+            name='conv1')
+        pool1 = self.castom_max_pooling2d(
+            conv1, 
+            name='pool1')
+        fire_params1 = [(32, 64, 'fire1'), 
+                        (32, 64, 'fire2')]
+        multi_fire1 = self.multi_fire_module(
+            pool1, 
+            fire_params1)
+        pool2 = self.castom_max_pooling2d(
+            multi_fire1, 
+            name='pool2')
+        fire_params2 = [
+            (32, 128, 'fire3'),
+            (32, 128, 'fire4')
+        ]
+        multi_fire2 = self.multi_fire_module(
+            pool2,
+            fire_params2)
+        dropout1 = tf.layers.dropout(multi_fire2, rate=0.5,
+            training=is_training)
+   
