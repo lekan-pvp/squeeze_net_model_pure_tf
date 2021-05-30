@@ -24,6 +24,37 @@ class SqueezeNetModel(object):
             updated_image = tf.image.resize_with_crop_or_pad(float_image, self.resize_dim, self.resize_dim)
         standartized_image = tf.image.per_image_standardization(updated_image)
         return standartized_image
-        
+
+    # Convolution layer wrapper
+    def custom_conv2d(self, inputs, filters, kernel_size, name):
+        return tf.layers.conv2d(
+            inputs=inputs,
+            filters=filters,
+            kernel_size=kernel_size,
+            activation=tf.nn.relu,
+            padding='same',
+            name=name)
+
+
+    # SqueezeNet fire module
+    def fire_module(self, inputs, squeeze_depth, expand_depth, name):
+        with tf.variable_scope(name):
+            squeezed_inputs = self.custom_conv2d(
+                inputs,
+                squeeze_depth,
+                [1, 1],
+                'squeeze')
+            expand1x1 = self.custom_conv2d(
+                squeezed_inputs,
+                expand_depth,
+                [1, 1],
+                'expand1x1')
+            expand3x3 = self.custom_conv2d(
+                squeezed_inputs,
+                expand_depth,
+                [3, 3],
+                'expand3x3')
+            return tf.concat([expand1x1, expand3x3], axis=-1)
+            
 
         
