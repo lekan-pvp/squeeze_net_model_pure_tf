@@ -1,3 +1,4 @@
+from os import name
 import tensorflow as tf
 
 class SqueezeNetModel(object):
@@ -62,4 +63,18 @@ class SqueezeNetModel(object):
             layer = self.fire_module(layer, params[0], params[1], params[2])
         return layer
     
+
+    # Max pooling layer wrapper
+    def castom_max_pooling2d(self, inputs, name):
+        return tf.layers.max_pooling2d(
+            inputs=inputs,
+            pool_size=[2, 2],
+            strides=2, 
+            name=name)
+
+    # Model layers
+    # inputs: [batch_size, resize_dim, resize_dim, 3]
+    def model_layers(self, inputs, is_training):
+        conv1 = self.custom_conv2d(inputs, filters=64, kernel_size=[3, 3], name='conv1')
+        pool1 = self.castom_max_pooling2d(conv1, name='pool1')
         
