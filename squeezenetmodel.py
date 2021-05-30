@@ -8,6 +8,17 @@ class SqueezeNetModel(object):
         self.resize_dim = resize_dim
         self.output_size = output_size
 
+    # Convert final convolution layer to logits
+    def get_logits(self, conv_layer):
+        avg_pool1 = tf.layers.average_pooling2d(
+            conv_layer, 
+            [conv_layer.shape[1], conv_layer.shape[2]], 
+            strides=1)
+        logits = tf.layers.flatten(
+            avg_pool1, 
+            name='logits')
+        return logits
+
     # Random crop and flip images
     def random_crop_and_flip(self, float_image):
         crop_image = tf.random_crop(float_image, size=[self.resize_dim, self.resize_dim, 3])
