@@ -77,4 +77,7 @@ class SqueezeNetModel(object):
     def model_layers(self, inputs, is_training):
         conv1 = self.custom_conv2d(inputs, filters=64, kernel_size=[3, 3], name='conv1')
         pool1 = self.castom_max_pooling2d(conv1, name='pool1')
+        fire_params1 = [(32, 64, 'fire1'), (32, 64, 'fire2')]
+        multi_fire1 = self.multi_fire_module(pool1, fire_params1)
+        pool2 = self.castom_max_pooling2d(multi_fire1, name='pool2')
         
